@@ -1,0 +1,242 @@
+<%args>
+	String typeName;
+	String typeDescription;
+</%args>
+<%java>
+	String capTypeName = Character.toUpperCase(typeName.charAt(0)) + typeName.substring(1);
+	String stringClassName = capTypeName + "String";
+	String arrayInterfaceName = "I" + capTypeName + "Array";
+	String sequenceInterfaceName = "I" + capTypeName + "Sequence";
+	String cursorInterfaceName = capTypeName + "Cursor";
+	String arrayCursorClassName = capTypeName + "ArrayCursor";
+</%java>
+package org.terrane.core;
+
+import java.util.Arrays;
+
+/**
+ * <% stringClassName %> is an immutable wrapper for an array of <% typeDescription %>s.
+ * In addition to providing read access to the array elements, <% stringClassName %> 
+ * offers Javascript-like concat and slice methods.  <% stringClassName %> is usable
+ * as a hash key.
+ */
+public class <% stringClassName %>
+	implements <% arrayInterfaceName %>, <% sequenceInterfaceName %>
+{
+	private final static <% typeName %>[] EMPTY_ARRAY = new <% typeName %>[0];
+
+	// By design, this array is constructed by this class and is inaccessible
+	// only to this class.  It's the only way to guarantee immutability.
+	private <% typeName %>[] values;
+
+	/**
+	 * Construct an empty <% stringClassName %>.
+	 */
+	public <% stringClassName %>()
+	{
+		this.values = EMPTY_ARRAY;
+	}
+
+	/**
+	 * Construct a <% stringClassName %> with the given values.
+	 */
+	public <% stringClassName %>(<% typeName %> ... values)
+	{
+		this(values, 0, values.length);
+	}
+
+	/**
+	 * Construct a <% stringClassName %> of a subrange of the given array.
+	 */
+	public <% stringClassName %>(<% typeName %>[] values, int start, int end)
+	{
+		this.values = new <% typeName %>[end - start];
+		System.arraycopy(values, start, this.values, 0, end - start);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public int length()
+	{
+		return values.length;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public <% typeName %> get(int ix)
+	{
+		return values[ix];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public <% cursorInterfaceName %> cursor()
+	{
+		return new <% arrayCursorClassName %>(values);
+	}
+
+	/**
+	 * Copy all of the values of this <% stringClassName %> into an output
+	 * buffer.
+	 * @param srcStart
+	 *    starting offset in this array
+	 * @param srcEnd
+	 *    ending offset in this array
+	 * @param outbuf
+	 *    output array
+	 * @param destStart
+	 *    starting offset in the output array
+	 */
+	public <% typeName %>[] getValues()
+	{
+		if (length() == 0) {
+			return EMPTY_ARRAY;
+		}
+		else {
+			<% typeName %>[] outbuf = new <% typeName %>[length()];
+			copyValues(0, length(), outbuf, 0);
+			return outbuf;
+		}
+	}
+
+	/**
+	 * Copy a subrange of the values of this <% stringClassName %> into an output
+	 * buffer.
+	 * @param srcStart
+	 *    starting offset in this array
+	 * @param srcEnd
+	 *    ending offset in this array
+	 * @param outbuf
+	 *    output array
+	 * @param destStart
+	 *    starting offset in the output array
+	 */
+	public void copyValues(int srcStart, int srcEnd, <% typeName %>[] outbuf, int destStart)
+	{
+		System.arraycopy(values, srcStart, outbuf, destStart, srcEnd - srcStart);
+	}
+
+	/**
+	 * Join two or more arrays to produce a new array, leaving the original arrays
+	 * unchanged.
+	 * @param addl
+	 *    some number of arrays to append to this one, in order
+	 * @return
+	 *    a new <% stringClassName %>, containing the joined sequence of values
+	 */
+	public <% stringClassName %> concat(<% stringClassName %> ... addl)
+	{
+		int concatLength = length();
+		for (<% stringClassName %> a : addl) {
+			concatLength += a.length();
+		}
+
+		<% typeName %>[] concatValues = new <% typeName %>[concatLength];
+		copyValues(0, length(), concatValues, 0);
+
+		int offset = length();
+		for (<% stringClassName %> a : addl) {
+			System.arraycopy(a.values, 0, concatValues, offset, a.length());
+			offset += a.length();
+		}
+
+		return wrap(concatValues);
+	}
+
+	/**
+	 * Join two or more arrays to produce a new array, leaving the original arrays
+	 * unchanged.
+	 * @param addl
+	 *    some number of arrays to append to this one, in order
+	 * @return
+	 *    a new <% stringClassName %>, containing the joined sequence of values
+	 */
+	public <% stringClassName %> concat(<% typeName %>[] ... addl)
+	{
+		int concatLength = length();
+		for (<% typeName %>[] a : addl) {
+			concatLength += a.length;
+		}
+
+		<% typeName %>[] concatValues = new <% typeName %>[concatLength];
+		copyValues(0, length(), concatValues, 0);
+
+		int offset = length();
+		for (<% typeName %>[] a : addl) {
+			System.arraycopy(a, 0, concatValues, offset, a.length);
+			offset += a.length;
+		}
+
+		return wrap(concatValues);
+	}
+
+	/**
+	 * Create a new <% stringClassName %> containing a selected subrange of the values
+	 * in this <% stringClassName %>.  The selection starts at a specified value and
+	 * continues through the end of the array.
+	 * @param start
+	 *    zero-based index of the first value in the selection
+	 * @return
+	 *    a new <% stringClassName %>, containing the selected values
+	 */
+	public <% stringClassName %> slice(int start)
+	{
+		return slice(start, length());
+	}
+
+	/**
+	 * Create a new <% stringClassName %> containing a selected subrange of the values
+	 * in this <% stringClassName %>.
+	 * @param start
+	 *    zero-based index of the first value in the selection
+	 * @param end
+	 *    zero-based index of the first value past the end of the selection
+	 * @return
+	 *    a new <% stringClassName %>, containing the selected values
+	 */
+	public <% stringClassName %> slice(int start, int end)
+	{
+		if (start == 0 && end == length()) {
+			return this;
+		}
+		else {
+			<% typeName %>[] outbuf = new <% typeName %>[end - start];
+			copyValues(start, end, outbuf, 0);
+			return wrap(outbuf);
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof <% stringClassName %>) {
+			return Arrays.equals(this.values, ((<% stringClassName %>) obj).values);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Arrays.hashCode(values);
+	}
+
+	@Override
+	public String toString()
+	{
+		return Arrays.toString(values);
+	}
+
+	private static <% stringClassName %> wrap(<% typeName %>[] values)
+	{
+		<% stringClassName %> wrapper = new <% stringClassName %>();
+		wrapper.values = values;
+		return wrapper;
+	}
+}

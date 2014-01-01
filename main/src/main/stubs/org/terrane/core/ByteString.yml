@@ -1,0 +1,3 @@
+--- # Class ByteString
+templateClassName:    org.terrane.core.templates.StringTemplate
+args:                 [byte, byte]

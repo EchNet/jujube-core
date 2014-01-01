@@ -1,0 +1,3 @@
+--- # Interface IFloatArray
+templateClassName:    org.terrane.core.templates.IArrayTemplate
+args:                 [float, 32-bit floating point value]

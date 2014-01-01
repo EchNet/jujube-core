@@ -1,0 +1,3 @@
+--- # Interface IDoubleArray
+templateClassName:    org.terrane.core.templates.IArrayTemplate
+args:                 [double, 64-bit floating point value]

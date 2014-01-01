@@ -1,0 +1,3 @@
+--- # Interface LongCursor
+templateClassName:    org.terrane.core.templates.CursorTemplate
+args:                 [long, 64-bit integer]

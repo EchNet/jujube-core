@@ -1,0 +1,171 @@
+<%args>
+	String typeName;
+	String typeDescription;
+</%args>
+<%java>
+	String capTypeName = Character.toUpperCase(typeName.charAt(0)) + typeName.substring(1);
+	String stringBufferClassName = capTypeName + "StringBuffer";
+	String stringClassName = capTypeName + "String";
+</%java>
+package org.terrane.core;
+
+import java.util.Arrays;
+
+/**
+ * <% stringBufferClassName %> is a mutable sequence of <% typeDescription %>s. 
+ * It may be used to to build <% stringClassName %>s.
+ */
+public final class <% stringBufferClassName %>
+	implements I<% capTypeName %>Array
+{
+	private final static int INITIAL_BUFFER_SIZE = 16;
+	private final static int ROOM_TO_GROW = 8;
+	private final static int MAXIMUM_BUFFER_INCREMENT = 1024;
+
+	private <% typeName %>[] buffer;
+	private int start, end;
+
+	/**
+	 * Construct an initially empty <% stringBufferClassName %>.
+	 */
+	public <% stringBufferClassName %>()
+	{
+		this.buffer = new <% typeName %>[INITIAL_BUFFER_SIZE];
+	}
+
+	/**
+	 * Construct a <% stringBufferClassName %> with the given initial values.
+	 * @param src
+	 *    a <% stringClassName %> containing initial values
+	 */
+	public <% stringBufferClassName %>(<% stringClassName %> src)
+	{
+		this.buffer = new <% typeName %>[src.length() + ROOM_TO_GROW];
+		this.end = src.length();
+		src.copyValues(0, src.length(), this.buffer, 0);
+	}
+
+	/**
+	 * Construct a <% stringBufferClassName %> with the given initial values.
+	 * @param src
+	 *    initial values
+	 */
+	public <% stringBufferClassName %>(<% typeName %> ... src)
+	{
+		this.buffer = new <% typeName %>[src.length + ROOM_TO_GROW];
+		this.end = src.length;
+		System.arraycopy(src, 0, this.buffer, 0, src.length);
+	}
+
+	@Override
+	public int length()
+	{
+		return end - start;
+	}
+
+	@Override
+	public <% typeName %> get(int ix)
+	{
+		if (ix < 0 || ix >= length()) {
+			throw new ArrayIndexOutOfBoundsException(ix);
+		}
+		return buffer[start + ix];
+	}
+
+	public <% stringBufferClassName %> set(int ix, <% typeName %> value)
+	{
+		if (ix < 0 || ix >= length()) {
+			throw new ArrayIndexOutOfBoundsException(ix);
+		}
+		buffer[start + ix] = value;
+		return this;
+	}
+
+	/**
+	 * Take a snapshot of the values of this <% stringBufferClassName %>.
+	 * @return
+	 *    <% stringClassName %> containing the values of this <% stringBufferClassName %>
+	 */
+	public <% stringClassName %> to<% stringClassName %>()
+	{
+		return new <% stringClassName %>(buffer, start, length());
+	}
+
+	/**
+	 * Append the given values to the end of this buffer.
+	 * @return this <% stringBufferClassName %>, enabling chaining
+	 */
+	public <% stringBufferClassName %> append(<% typeName %> ... addl)
+	{
+		return splice(length(), 0, addl);
+	}
+
+	/**
+	 * Replace a subrange of values of this buffer, of length zero or more,
+	 * with the given values.
+	 * @return this <% stringBufferClassName %>, enabling chaining
+	 */
+	public <% stringBufferClassName %> splice(int headLength, int howmany, <% typeName %> ... addl)
+	{
+		if (headLength < 0 || headLength > length()) {
+			throw new ArrayIndexOutOfBoundsException(headLength);
+		}
+		if (howmany < 0 || headLength + howmany > length()) {
+			throw new IllegalArgumentException("howmany=" + howmany);
+		}
+		<% typeName %>[] prevBuffer = this.buffer;
+		int tailStart = start + headLength + howmany;
+		int tailLength = length() - tailStart;
+		int destHeadStart = 0;
+		int newLength = length() + addl.length - howmany;
+		if (newLength > buffer.length) {
+			int newBufferLength = Math.max(
+				newLength,
+				buffer.length + Math.min(buffer.length, MAXIMUM_BUFFER_INCREMENT));
+			this.buffer = new <% typeName %>[newBufferLength];
+		}
+		else if (start + newLength < buffer.length) {
+			destHeadStart = start;
+		}
+		else if (headLength + addl.length <= tailStart) {
+			destHeadStart = tailStart - headLength - addl.length;
+		}
+		shiftBufferRange(prevBuffer, start, destHeadStart, headLength);
+		shiftBufferRange(prevBuffer, tailStart, destHeadStart + headLength + addl.length, tailLength);
+		System.arraycopy(addl, 0, buffer, destHeadStart + headLength, addl.length);
+		this.start = destHeadStart;
+		this.end = destHeadStart + newLength;
+		return this;
+	}
+
+	public <% stringBufferClassName %> reverse()
+	{
+		int halfLength = length() / 2;
+		for (int i = 0; i < halfLength; ++i) {
+			<% typeName %> tmp = buffer[start + i];
+			buffer[start + i] = buffer[end - 1 - i];
+			buffer[end - 1 - i] = tmp;
+		}
+		return this;
+	}
+
+	public <% stringBufferClassName %> sort()
+	{
+		Arrays.sort(buffer, start, end);
+		return this;
+	}
+
+	private void shiftBufferRange(<% typeName %>[] prevBuffer, int src, int dest, int length)
+	{
+		if (dest < src) {
+			for (int i = 0; i < length; ++i) {
+				buffer[dest + i] = prevBuffer[src + i];
+			}
+		}
+		else if (dest > src || prevBuffer != buffer) {
+			for (int i = length; --i >= 0; ) {
+				buffer[dest + i] = prevBuffer[src + i];
+			}
+		}
+	}
+}

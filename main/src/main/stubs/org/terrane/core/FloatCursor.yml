@@ -1,0 +1,3 @@
+--- # Interface FloatCursor
+templateClassName:    org.terrane.core.templates.CursorTemplate
+args:                 [float, 32-bit floating point value]

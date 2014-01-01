@@ -1,0 +1,3 @@
+--- # Interface ILongArray
+templateClassName:    org.terrane.core.templates.IArrayTemplate
+args:                 [long, 64-bit integer]

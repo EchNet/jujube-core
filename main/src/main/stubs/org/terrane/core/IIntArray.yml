@@ -1,0 +1,3 @@
+--- # Interface IIntArray
+templateClassName:    org.terrane.core.templates.IArrayTemplate
+args:                 [int, 32-bit integer]

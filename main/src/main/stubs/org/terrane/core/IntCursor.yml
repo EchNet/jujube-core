@@ -1,0 +1,3 @@
+--- # Interface IntCursor
+templateClassName:    org.terrane.core.templates.CursorTemplate
+args:                 [int, 32-bit integer]

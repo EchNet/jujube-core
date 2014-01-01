@@ -1,0 +1,3 @@
+--- # Class DoubleArrayCursor
+templateClassName:    org.terrane.core.templates.ArrayCursorTemplate
+args:                 [double, 64-bit floating point value]

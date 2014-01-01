@@ -1,0 +1,3 @@
+--- # Interface ByteCursor
+templateClassName:    org.terrane.core.templates.CursorTemplate
+args:                 [byte, byte]

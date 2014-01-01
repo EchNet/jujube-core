@@ -1,0 +1,25 @@
+<%args>
+	String typeName;
+	String typeDescription;
+</%args>
+<%java>
+	String capTypeName = Character.toUpperCase(typeName.charAt(0)) + typeName.substring(1);
+	String sequenceClassName = "I" + capTypeName + "Sequence";
+	String cursorClassName = capTypeName + "Cursor";
+</%java>
+package org.terrane.core;
+
+/**
+ * <% sequenceClassName %> is a collection of <% typeDescription %> that may be
+ * visited in sequence.
+ */
+public interface <% sequenceClassName %>
+{
+	/**
+	 * Begin iterating over the values of this sequence.
+	 * @return
+	 *    a <% cursorClassName %>, initially positioned at the start of this
+	 *    sequence
+	 */
+	public <% cursorClassName %> cursor();
+}

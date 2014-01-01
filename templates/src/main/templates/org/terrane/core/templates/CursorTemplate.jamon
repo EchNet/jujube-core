@@ -1,0 +1,48 @@
+<%args>
+	String typeName;
+	String typeDescription;
+</%args>
+<%java>
+	String capTypeName = Character.toUpperCase(typeName.charAt(0)) + typeName.substring(1);
+	String cursorInterfaceName = capTypeName + "Cursor";
+</%java>
+package org.terrane.core;
+
+/**
+ * <% cursorInterfaceName %> is an iterator over a sequence of <% typeDescription %>s.
+ * <% cursorInterfaceName %> does not permit modification of the underlying sequence.
+ */
+public interface <% cursorInterfaceName %>
+{
+	/**
+	 * Get the next value in the sequence, advancing this cursor's position in
+	 * the sequence.
+	 * @return
+	 *    the next value in the sequence
+	 * @throws java.util.NoSuchElementException
+	 *    if this cursor is positioned at the end of the sequence
+	 */
+	public <% typeName %> next();
+
+	/**
+	 * Return <code>true</code> if this cursor can return a next value, i.e., 
+	 * this cursor is not positioned at the end of the sequence.  A return value
+	 * of <code>true</code> indicates that the next call to this cursor's
+	 * {@link #next()} will return.  Inversely, a return value of 
+	 * <code>false</code> indicates that the next call to this cursor's
+	 * {@link #next()} will throw a {@link NoSuchElementException}.
+	 * @return
+	 *    <code>true</code> if this cursor is not positioned at the end of the 
+	 *    sequence
+	 */
+	public boolean hasNext();
+
+	/**
+	 * (Optional operation)  Create a copy of this cursor.
+	 * @return 
+	 *    a new <% cursorInterfaceName %> instance with the same position as this cursor
+	 * @throws UnsupportedOperationException
+	 *    if this cursor type does not support copying
+	 */
+	public <% cursorInterfaceName %> copy();
+}

@@ -1,0 +1,3 @@
+--- # Interface IByteSequence
+templateClassName:    org.terrane.core.templates.ISequenceTemplate
+args:                 [byte, byte]

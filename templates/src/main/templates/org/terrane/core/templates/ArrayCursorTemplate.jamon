@@ -1,0 +1,64 @@
+<%args>
+	String typeName;
+	String typeDescription;
+</%args>
+<%java>
+	String capTypeName = Character.toUpperCase(typeName.charAt(0)) + typeName.substring(1);
+	String cursorInterfaceName = capTypeName + "Cursor";
+	String cursorClassName = capTypeName + "ArrayCursor";
+</%java>
+package org.terrane.core;
+
+/**
+ * <% cursorClassName %> iterates over the elements of an array of 
+ * <% typeDescription %>.
+ */
+public class <% cursorClassName %>
+	implements <% cursorInterfaceName %>
+{
+	private <% typeName %>[] array;
+	private int ix;
+
+	/**
+	 * Construct a new <% cursorClassName %>.
+	 */
+	public <% cursorClassName %>(<% typeName %>[] array)
+	{
+		this(array, 0);
+	}
+
+	private <% cursorClassName %>(<% typeName %>[] array, int ix)
+	{
+		this.array = array;
+		this.ix = ix;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public <% typeName %> next()
+	{
+		try {
+			return array[ix++];
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			throw new java.util.NoSuchElementException();
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public boolean hasNext()
+	{
+		return ix < array.length;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public <% cursorClassName %> copy()
+	{
+		return new <% cursorClassName %>(array, ix);
+	}
+}

@@ -1,0 +1,3 @@
+--- # Interface DoubleCursor
+templateClassName:    org.terrane.core.templates.CursorTemplate
+args:                 [double, 64-bit floating point value]

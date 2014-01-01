@@ -1,0 +1,3 @@
+--- # Interface IByteArray
+templateClassName:    org.terrane.core.templates.IArrayTemplate
+args:                 [byte, byte]
